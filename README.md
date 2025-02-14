@@ -10,6 +10,8 @@ The strategy implements a simple yet effective approach:
 - Maintains a long-only approach with clear entry/exit rules
 - Achieved 294.34% return in backtesting
 
+![Strategy Visualization](simple_rsi_strategy.png)
+
 ## Key Features
 
 - **RSI-based Signals**: Short-term (5-period) RSI for quick signal generation
@@ -64,12 +66,28 @@ This will:
 
 ## Visualization Components
 
-The strategy generates a comprehensive visualization including:
-1. Bitcoin price with buy/sell signals
-2. RSI indicator with overbought threshold
-3. Portfolio drawdown analysis
-4. Returns distribution
-5. Equity curve
+The strategy generates a comprehensive visualization with multiple components:
+
+1. **Bitcoin Price Chart**
+   - Clean price line visualization
+   - Minimalist design for better readability
+
+2. **5-Day RSI Indicator**
+   - Short-term RSI with 5-period window
+   - Overbought threshold at 70 (red dashed line)
+   - Highlighted overbought zone for clear signal identification
+
+3. **Portfolio Analysis**
+   - Drawdown visualization showing risk exposure over time
+   - Daily returns distribution with density estimation
+   - Equity curve with modern styling (#2ecc71 green)
+
+## Chart Features
+
+- **Clean Design**: Removed trade markers for cleaner visualization
+- **Modern Styling**: Enhanced equity curve visualization with appealing color scheme
+- **Clear Indicators**: Explicit labeling of 5-Day RSI for better understanding
+- **Grid Layout**: Organized display of key metrics and charts
 
 ## Project Structure
 

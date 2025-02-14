@@ -124,11 +124,6 @@ gs = plt.GridSpec(5, 2, figure=fig, height_ratios=[1, 1, 0.8, 0.8, 1])
 # Price and trades (spanning both columns)
 ax1 = fig.add_subplot(gs[0, :])
 ax1.plot(df.index, df['Close'], color='blue', alpha=0.3, label='BTC Price')
-if not trades_df.empty:
-    buy_trades = trades_df[trades_df['type'] == 'BUY']
-    sell_trades = trades_df[trades_df['type'] == 'SELL']
-    ax1.scatter(buy_trades['date'], buy_trades['price'], color='green', marker='^', label='Buy')
-    ax1.scatter(sell_trades['date'], sell_trades['price'], color='red', marker='v', label='Sell')
 ax1.set_ylabel('BTC Price ($)')
 ax1.legend()
 
@@ -137,7 +132,7 @@ ax2 = fig.add_subplot(gs[1, :])
 ax2.plot(df.index, df['RSI'], color='purple')
 ax2.axhline(y=70, color='red', linestyle='--')
 ax2.fill_between(df.index, 70, 100, color='red', alpha=0.1)
-ax2.set_ylabel('RSI')
+ax2.set_ylabel('5-Day RSI')
 ax2.set_ylim(0, 100)
 
 # Drawdown (left column)
@@ -158,7 +153,7 @@ ax4.set_ylabel('Frequency')
 
 # Portfolio Value (spanning both columns, at bottom)
 ax5 = fig.add_subplot(gs[3:, :])
-ax5.plot(portfolio_df.index, portfolio_df['Portfolio_Value'], color='green')
+ax5.plot(portfolio_df.index, portfolio_df['Portfolio_Value'], color='#2ecc71', linewidth=2)
 ax5.set_ylabel('Portfolio Value ($)')
 ax5.set_title('Equity Curve')
 
