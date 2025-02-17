@@ -8,7 +8,7 @@ The strategy implements a mathematically rigorous approach:
 - Uses 5-period RSI to identify overbought conditions (RSI > 70)
 - Implements Kelly-optimal position sizing (32.44%)
 - Maintains a long-only approach with clear entry/exit rules
-- Achieved 784.49% return in backtesting
+- Achieved 784.49% return in backtesting ($784,494 total profit)
 
 ![Strategy Visualization](rsi_strategy.png)
 
@@ -90,9 +90,11 @@ The strategy will:
 Latest backtest results with Kelly-optimal position sizing:
 - Total Return: 784.49%
 - Win Rate: 44.2%
-- Total PnL: $530,004.30
+- Total PnL: $784,494.23
+- Total Trades: 217
 - Sharpe Ratio: 1.27
 - Maximum Drawdown: -12.06%
+- Current Drawdown: -4.53%
 
 ## Kelly Criterion Implementation
 
