@@ -1,9 +1,21 @@
+"""
+Bitcoin Data Download Utility
+
+This script downloads historical Bitcoin price data from Yahoo Finance,
+cleans the data, and saves it to a CSV file for use in the trading strategy.
+
+The data includes:
+- Daily OHLCV data
+- Date range from 2014 to present
+- Cleaned and formatted for strategy use
+"""
+
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
 
 # Calculate dates
-end_date = datetime(2024, 12, 31)  # End at December 31, 2024
+end_date = datetime.now()  # Current date
 start_date = datetime(2014, 1, 1)  # Start from January 1, 2014
 
 # Download Bitcoin data

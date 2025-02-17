@@ -1,5 +1,6 @@
-pandas
-numpy
-ta
-matplotlib
-seaborn 
+pandas==2.0.0
+numpy==1.24.0
+ta==0.10.2
+matplotlib==3.7.1
+seaborn==0.12.2
+yfinance==0.2.36 
