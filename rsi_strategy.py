@@ -47,6 +47,7 @@ trades = []
 portfolio_values = [capital]
 dates = [df.index[0]]
 current_shares = 0
+total_pnl = 0  # Track total PnL
 
 # Run strategy
 for i in range(RSI_WINDOW, len(df)):
@@ -66,21 +67,28 @@ for i in range(RSI_WINDOW, len(df)):
         position = True
         current_shares = trade_size / current_price
         capital -= trade_size
+        entry_portfolio_value = current_portfolio_value  # Store entry portfolio value
         
         trades.append({
             'date': df.index[i],
             'type': 'BUY',
             'price': current_price,
             'shares': current_shares,
-            'trade_size': trade_size
+            'trade_size': trade_size,
+            'portfolio_value': current_portfolio_value
         })
     
     # Long exit signal (RSI no longer overbought)
     elif position and current_rsi < RSI_OVERBOUGHT:
         position = False
         exit_value = current_shares * current_price
-        pnl = exit_value - trade_size
+        trade_pnl = exit_value - trade_size  # Individual trade PnL
         capital += exit_value  # Add the exit value back to capital
+        
+        # Calculate strategy PnL
+        exit_portfolio_value = capital  # Current capital after exit
+        strategy_pnl = exit_portfolio_value - entry_portfolio_value
+        total_pnl += strategy_pnl
         
         trades.append({
             'date': df.index[i],
@@ -88,8 +96,10 @@ for i in range(RSI_WINDOW, len(df)):
             'price': current_price,
             'shares': current_shares,
             'trade_size': trade_size,
-            'pnl': pnl,
-            'return': (pnl / trade_size) * 100
+            'trade_pnl': trade_pnl,
+            'strategy_pnl': strategy_pnl,
+            'portfolio_value': exit_portfolio_value,
+            'return': (trade_pnl / trade_size) * 100
         })
         current_shares = 0
     
@@ -109,8 +119,7 @@ trades_df = pd.DataFrame(trades)
 # Calculate performance metrics
 if not trades_df.empty:
     sell_trades = trades_df[trades_df['type'] == 'SELL'].copy()
-    total_pnl = sell_trades['pnl'].sum()
-    win_rate = (sell_trades['pnl'] > 0).mean() * 100
+    win_rate = (sell_trades['trade_pnl'] > 0).mean() * 100
     total_return = (portfolio_df['Portfolio_Value'].iloc[-1] / INITIAL_CAPITAL - 1) * 100
 
 # Calculate risk metrics
