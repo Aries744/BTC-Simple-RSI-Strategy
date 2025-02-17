@@ -8,7 +8,8 @@ The strategy implements a mathematically rigorous approach:
 - Uses 5-period RSI to identify overbought conditions (RSI > 70)
 - Implements Kelly-optimal position sizing (32.44%)
 - Maintains a long-only approach with clear entry/exit rules
-- Achieved 784.49% return in backtesting ($784,494 total profit)
+- Includes realistic Binance trading fees and slippage
+- Achieved 563.97% return in backtesting ($563,973 total profit)
 
 ![Strategy Visualization](rsi_strategy.png)
 
@@ -22,8 +23,31 @@ The strategy implements a mathematically rigorous approach:
   - Average Loss: 2.14%
   - Win/Loss Ratio: 4.73
   - Kelly Formula: K% = W - [(1-W)/R] = 32.44%
+- **Trading Costs**:
+  - Trading Fees: 0.1% per trade (taker fee)
+  - Slippage: 0.1% per trade
+  - Total Round Trip Cost: 0.4%
 - **Risk Management**: Integrated drawdown monitoring and position size adjustment
 - **Performance Analytics**: Comprehensive visualization of trades, equity, and risk metrics
+
+## Trading Cost Implementation
+
+The strategy uses conservative fee assumptions for robust backtesting:
+
+1. **Taker Fees (0.1%)**:
+   - Strategy requires immediate execution on RSI signals
+   - Large position sizes (32.44%) make waiting for maker orders risky
+   - Conservative assumption for backtesting accuracy
+
+2. **Slippage (0.1%)**:
+   - Accounts for large position sizes impacting market price
+   - Considers typical BTC/USDT spread on Binance
+   - Factors in market impact during volatile periods
+
+3. **Potential Optimizations** (not implemented):
+   - Using BNB for 25% fee discount
+   - Market making with limit orders
+   - VIP levels for lower fees
 
 ## Requirements
 
@@ -87,14 +111,20 @@ The strategy will:
 
 ## Strategy Performance
 
-Latest backtest results with Kelly-optimal position sizing:
-- Total Return: 784.49%
-- Win Rate: 44.2%
-- Total PnL: $784,494.23
+Latest backtest results with Kelly-optimal position sizing and trading costs:
+- Total Return: 563.97%
+- Win Rate: 40.6%
+- Total PnL: $563,973.20
 - Total Trades: 217
-- Sharpe Ratio: 1.27
-- Maximum Drawdown: -12.06%
-- Current Drawdown: -4.53%
+- Sharpe Ratio: 1.08
+- Maximum Drawdown: -12.86%
+- Current Drawdown: -4.83%
+
+These results include:
+- Full trading costs (0.4% round trip)
+- Conservative taker fees (0.1% per trade)
+- Realistic slippage estimates (0.1% per trade)
+- No fee optimizations applied
 
 ## Kelly Criterion Implementation
 

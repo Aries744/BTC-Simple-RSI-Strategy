@@ -12,6 +12,27 @@ was derived from fixed-size backtesting analysis that showed:
 Kelly Formula: K% = W - [(1-W)/R]
             = 0.4424 - [(1-0.4424)/4.73]
             = 32.44%
+
+Trading costs (Binance):
+- Trading fees: 0.1% per trade (taker fee)
+- Slippage: 0.1% per trade (conservative estimate)
+- Total round trip cost: 0.4%
+
+Fee Structure Reasoning:
+1. Using taker fees (0.1%) instead of maker fees because:
+   - Strategy requires immediate execution on RSI signals
+   - Large position sizes (32.44%) make waiting for maker orders risky
+   - Conservative assumption for backtesting accuracy
+2. Slippage estimate (0.1%) accounts for:
+   - Large position sizes impacting market price
+   - Typical BTC/USDT spread on Binance
+   - Market impact during volatile periods
+
+Note: While fees could be optimized through:
+- Using BNB for 25% fee discount
+- Market making with limit orders
+- VIP levels for lower fees
+We maintain the conservative 0.1% fee assumption for robust backtesting.
 """
 
 import pandas as pd
@@ -35,6 +56,8 @@ RSI_WINDOW = 5
 RSI_OVERBOUGHT = 70
 KELLY_FRACTION = 0.3244  # Derived from fixed-size analysis
 INITIAL_CAPITAL = 100000
+TRADING_FEE_PCT = 0.001  # 0.1% per trade
+SLIPPAGE_PCT = 0.001    # 0.1% per trade
 
 # Calculate RSI
 rsi = RSIIndicator(close=df['Close'], window=RSI_WINDOW)
@@ -65,28 +88,36 @@ for i in range(RSI_WINDOW, len(df)):
     # Long entry signal (RSI overbought)
     if not position and current_rsi > RSI_OVERBOUGHT:
         position = True
-        current_shares = trade_size / current_price
+        # Apply entry fees and slippage
+        effective_entry_price = current_price * (1 + TRADING_FEE_PCT + SLIPPAGE_PCT)
+        trade_size = current_portfolio_value * KELLY_FRACTION
+        current_shares = trade_size / effective_entry_price
         capital -= trade_size
-        entry_portfolio_value = current_portfolio_value  # Store entry portfolio value
+        entry_portfolio_value = current_portfolio_value
         
         trades.append({
             'date': df.index[i],
             'type': 'BUY',
             'price': current_price,
+            'effective_price': effective_entry_price,
             'shares': current_shares,
             'trade_size': trade_size,
+            'fees': trade_size * TRADING_FEE_PCT,
+            'slippage': trade_size * SLIPPAGE_PCT,
             'portfolio_value': current_portfolio_value
         })
     
     # Long exit signal (RSI no longer overbought)
     elif position and current_rsi < RSI_OVERBOUGHT:
         position = False
-        exit_value = current_shares * current_price
-        trade_pnl = exit_value - trade_size  # Individual trade PnL
-        capital += exit_value  # Add the exit value back to capital
+        # Apply exit fees and slippage
+        effective_exit_price = current_price * (1 - TRADING_FEE_PCT - SLIPPAGE_PCT)
+        exit_value = current_shares * effective_exit_price
+        trade_pnl = exit_value - trade_size
+        capital += exit_value
         
         # Calculate strategy PnL
-        exit_portfolio_value = capital  # Current capital after exit
+        exit_portfolio_value = capital
         strategy_pnl = exit_portfolio_value - entry_portfolio_value
         total_pnl += strategy_pnl
         
@@ -94,10 +125,13 @@ for i in range(RSI_WINDOW, len(df)):
             'date': df.index[i],
             'type': 'SELL',
             'price': current_price,
+            'effective_price': effective_exit_price,
             'shares': current_shares,
             'trade_size': trade_size,
             'trade_pnl': trade_pnl,
             'strategy_pnl': strategy_pnl,
+            'fees': exit_value * TRADING_FEE_PCT,
+            'slippage': exit_value * SLIPPAGE_PCT,
             'portfolio_value': exit_portfolio_value,
             'return': (trade_pnl / trade_size) * 100
         })
